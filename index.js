@@ -9,7 +9,7 @@ function demoCompile() {
 }
 function demoJson() {
     const input = document.getElementById('json-input');
-    try { input.value = JSON.stringify(JSON.parse(input.value), null, 4); } catch(e) { alert("Lỗi JSON!"); }
+    try { input.value = JSON.stringify(JSON.parse(input.value), null, 4); } catch(e) { alert("Invalid JSON."); }
 }
 function runStudio() {
     const html = document.getElementById('html-code').value;
