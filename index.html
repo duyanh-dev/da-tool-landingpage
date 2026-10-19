@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth is-loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,119 +18,145 @@
     <meta name="twitter:title" content="Duy Anh Desktop Lab | All-in-One Frontend Developer App">
     <meta name="twitter:description" content="A focused desktop environment for coding, data processing, and personal productivity workflows.">
     <meta name="twitter:image" content="https://duyanh-dev.github.io/da-tool-landingpage/assets/og-image.png">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23030712'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' font-family='Arial, sans-serif' font-size='30' font-weight='700' fill='url(%23g)'%3EDA%3C/text%3E%3C/svg%3E">
-    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1115'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' font-family='Arial, sans-serif' font-size='30' font-weight='700' fill='%233a43ff'%3EDA%3C/text%3E%3C/svg%3E">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        
-        :root { 
-            --primary: #6366f1; 
-            --accent: #a855f7; 
-            --bg: #030712; 
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap');
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg); 
-            color: #f8fafc; 
-            overflow-x: hidden; 
-        }
+        :root { --bg:#e4e7ec; --surface:#f6f7f9; --ink:#0f1115; --muted:#5b6170; --cobalt:#3a43ff; --hot:#ff4d2e; --veil:228,231,236; --fg:#0f1115; --fg2:#475063; }
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family:'Space Grotesk',sans-serif; background-color:#e4e7ec; color:var(--ink); overflow-x:hidden; }
+        html.is-loading, html.is-loading body { overflow:hidden; }
+        .code-font { font-family:'Fira Code',monospace; }
+        #bg3d { position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+        /* veil: calm centre so content stays readable, 3D lives at the edges */
+        #veil { position:fixed; inset:0; z-index:0; pointer-events:none;
+            background: radial-gradient(ellipse 75% 65% at 50% 50%, rgba(var(--veil),.55) 0%, rgba(var(--veil),.3) 55%, rgba(var(--veil),0) 100%); }
+        main, nav, footer, section { position:relative; z-index:1; }
 
-        .code-font { font-family: 'Fira Code', monospace; }
+        .glass { background:rgba(246,247,249,.78); backdrop-filter:blur(14px); }
+        .bento-card { position:relative; border-radius:28px; overflow:hidden; background:var(--surface); will-change:transform; }
+        .bento-card.dark { background:var(--ink); color:#f4f5f7; }
+        .field { background:var(--ink); color:#e8eaf0; border-radius:16px; }
+        .field:focus { background:#1a1d24; }
+        #css-output { background:#e1e4f7; color:#2530d9; }
 
-        .glass { 
-            background: rgba(17, 24, 39, 0.6); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-        }
+        .ch { display:inline-block; will-change:transform; }
+        .wd { opacity:.18; }
+        .mask { overflow:hidden; display:block; }
+        #mini-cl-canvas { background:#14161c; }
+        .dot-handle { cursor:grab; background:#fff !important; border:0 !important; border-radius:6px !important; width:22px !important; height:22px !important; transition:transform .2s; }
+        .dot-handle:hover { transform:scale(1.35); }
+        .dot-handle:active { cursor:grabbing; }
+        ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:#9aa0ae; border-radius:10px; }
+        .chip { transition:background .25s,color .25s; } .chip:hover { background:var(--cobalt); color:#fff; }
+        @media (prefers-reduced-motion:reduce){ *{ scroll-behavior:auto !important; } }
 
-        .bento-card { 
-            position: relative; 
-            border-radius: 24px; 
-            overflow: hidden; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            background: rgba(15, 23, 42, 0.4); 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-        }
+        /* preloader */
+        #pre { position:fixed; inset:0; z-index:100; }
+        #pre-t, #pre-b { position:absolute; left:0; width:100%; height:50.2%; background:#e4e7ec; will-change:transform; }
+        #pre-t { top:0; } #pre-b { bottom:0; }
+        #pre-seam { position:absolute; left:0; top:calc(50% - 1px); width:100%; height:2px; background:#3a43ff; transform:scaleX(0); }
+        #pre-ui { position:absolute; inset:0; }
+        .pre-mono { font-family:'Fira Code',monospace; font-size:11px; letter-spacing:.08em; color:#5b6170; }
+        .pre-top { position:absolute; left:28px; right:28px; top:26px; display:flex; justify-content:space-between; }
+        .pc { position:absolute; width:14px; height:14px; border:0 solid rgba(15,17,21,.35); }
+        .pc.tl { left:16px; top:16px; border-width:1px 0 0 1px; } .pc.tr { right:16px; top:16px; border-width:1px 1px 0 0; }
+        .pc.bl { left:16px; bottom:16px; border-width:0 0 1px 1px; } .pc.br { right:16px; bottom:16px; border-width:0 1px 1px 0; }
+        #pre-center { position:absolute; left:50%; top:50%; width:132px; height:132px; margin:-86px 0 0 -66px; }
+        #pre-ring { position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg); overflow:visible; }
+        #pre-ring circle { fill:none; } .ring-bg { stroke:rgba(15,17,21,.12); stroke-width:1; }
+        #pre-arc { stroke:#0f1115; stroke-width:1.5; stroke-linecap:round; stroke-dasharray:339.3; stroke-dashoffset:339.3; }
+        #pre-logo { position:absolute; left:34px; top:34px; width:64px; height:64px; border-radius:18px; background:#0f1115; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:22px; letter-spacing:.04em; }
+        #pre-logo b { color:#3a43ff; }
+        #pre-ruler { position:absolute; left:0; right:0; top:calc(50% + 100px); margin:0 auto; width:min(420px,70vw); height:14px; display:flex; justify-content:space-between; align-items:flex-end; }
+        #pre-ruler i { width:1px; height:6px; background:rgba(15,17,21,.2); transition:background .2s; } #pre-ruler i.m { height:12px; } #pre-ruler i.on { background:#0f1115; }
+        .pre-bot { position:absolute; left:28px; right:28px; bottom:26px; display:flex; justify-content:space-between; align-items:flex-end; }
+        #pre-log { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; min-height:84px; justify-content:flex-end; }
+        #pre-log li { opacity:0; } #pre-log li.done { color:#0f1115; opacity:.55 !important; }
+        #pre-n { font-family:'Fira Code',monospace; font-weight:400; font-size:clamp(4rem,10vw,8rem); line-height:.8; letter-spacing:-.05em; color:#0f1115; }
 
-        .bento-card:hover { 
-            border-color: rgba(99, 102, 241, 0.4); 
-            transform: translateY(-4px); 
-            box-shadow: 0 20px 40px -20px rgba(99, 102, 241, 0.3); 
-        }
+        /* zoom chapter */
+        #zoom { height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+        #zoom-frame { position:relative; width:100%; height:100%; max-width:1280px; border:1px solid rgba(255,255,255,.14); overflow:hidden;
+            background: radial-gradient(circle at 50% 40%, rgba(58,67,255,.22), rgba(11,13,18,.9) 70%); color:#f4f5f7; will-change:transform; }
+        .zs { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; opacity:0; will-change:transform,filter; }
+        .zs small { font-family:'Fira Code',monospace; font-size:12px; letter-spacing:.12em; color:#8f95ff; margin-bottom:18px; }
+        .zs h3 { font-size:clamp(3.2rem,12vw,10rem); font-weight:700; letter-spacing:-.05em; line-height:.95; }
+        .zs p { margin-top:22px; max-width:34rem; color:#9aa0ae; font-size:clamp(1rem,2vw,1.25rem); }
+        #zoom-bar { position:absolute; left:0; bottom:0; height:2px; width:100%; background:#3a43ff; transform:scaleX(0); transform-origin:left; }
+        /* readable section titles: colour follows the page tone, with a soft halo */
+        .sec-head h2, #hero-title { color:var(--fg); text-shadow:0 0 40px rgba(var(--veil),.95), 0 0 10px rgba(var(--veil),.7); }
+        .sec-head .lead { color:var(--fg2) !important; text-shadow:0 0 24px rgba(var(--veil),.9); }
+        #hero-title span { text-shadow:inherit; }
 
-        #mini-cl-canvas { 
-            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); 
-            background-size: 30px 30px; 
-        }
-
-        .dot-handle { 
-            transition: transform 0.2s, background 0.2s; 
-            cursor: move; 
-        }
-
-        .dot-handle:hover { 
-            transform: scale(1.3); 
-            background: #fff; 
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-        /* Custom Clip Path Animation */
-        @keyframes morph {
-            0% { clip-path: polygon(25% 25%, 75% 25%, 75% 75%, 25% 75%); }
-            50% { clip-path: polygon(10% 40%, 90% 10%, 80% 90%, 20% 60%); }
-            100% { clip-path: polygon(25% 25%, 75% 25%, 75% 75%, 25% 75%); }
-        }
-        .morph-animate { animation: morph 10s infinite ease-in-out; }
-
-        .gradient-text {
-            background: linear-gradient(to right, #6366f1, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* footer */
+        .ft-cta { position:relative; width:clamp(150px,18vw,220px); aspect-ratio:1; border-radius:50%; background:#3a43ff; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; font-weight:700; font-size:13px; letter-spacing:.06em; text-align:center; transition:background .3s,color .3s; }
+        .ft-cta:hover { background:#f4f5f7; color:#0f1115; } .ft-cta i { font-size:22px; transition:transform .4s; } .ft-cta:hover i { transform:rotate(-45deg); }
+        .ft-cta::after { content:""; position:absolute; inset:-12px; border-radius:50%; border:1px solid rgba(143,149,255,.45); animation:ftring 2.6s ease-out infinite; }
+        @keyframes ftring { from { transform:scale(.92); opacity:1; } to { transform:scale(1.2); opacity:0; } }
+        .ft-link { display:block; padding:6px 0; color:#9aa0ae; transition:color .2s,transform .2s; } .ft-link:hover { color:#fff; transform:translateX(4px); }
+        #ft-word-wrap { overflow:hidden; padding-bottom:.04em; }
+        @media (prefers-reduced-motion:reduce){ .ft-cta::after { animation:none !important; } }
     </style>
 </head>
 <body class="selection:bg-indigo-500/30">
 
+    <div id="pre" aria-hidden="true">
+        <div id="pre-t"></div><div id="pre-b"></div><div id="pre-seam"></div>
+        <div id="pre-ui">
+            <span class="pc tl"></span><span class="pc tr"></span><span class="pc bl"></span><span class="pc br"></span>
+            <div class="pre-top"><span id="pre-brand" class="pre-mono">DUYANH.DESKTOPLAB</span><span class="pre-mono">V1.2.1 / BUILD 2026</span></div>
+            <div id="pre-center">
+                <svg id="pre-ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54"/><circle id="pre-arc" cx="60" cy="60" r="54"/></svg>
+                <div id="pre-logo">D<b>A</b></div>
+            </div>
+            <div id="pre-ruler"></div>
+            <div class="pre-bot">
+                <ul id="pre-log" class="pre-mono"><li></li><li></li><li></li><li></li></ul>
+                <div id="pre-n">000</div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="bg3d"></canvas>
+    <div id="veil"></div>
+
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 glass border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <nav class="fixed top-4 left-0 w-full z-50 px-4">
+        <div class="max-w-7xl mx-auto px-5 h-16 rounded-2xl glass flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-bold">DA</div>
-                <span class="hidden sm:inline text-xl font-extrabold tracking-tight uppercase italic">DuyAnh<span class="text-indigo-500">.DesktopLab</span></span>
+                <div class="w-10 h-10 rounded-xl bg-[#3a43ff] text-white flex items-center justify-center font-bold">DA</div>
+                <span class="hidden sm:inline text-lg font-bold tracking-tight">DuyAnh<span class="text-[#3a43ff]">.DesktopLab</span></span>
             </div>
-            <div class="hidden lg:flex gap-10 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                <a href="#story" class="hover:text-white transition">Story</a>
-                <a href="#features" class="hover:text-white transition">Core Features</a>
-                <a href="#tech" class="hover:text-white transition">Tech Stack</a>
+            <div class="hidden lg:flex gap-10 text-sm font-medium text-slate-600">
+                <a href="#story" class="hover:text-black transition">Story</a>
+                <a href="#features" class="hover:text-black transition">Core Features</a>
+                <a href="#tech" class="hover:text-black transition">Tech Stack</a>
             </div>
             <div class="flex items-center gap-3">
-                <a href="https://github.com/duyanh-dev/my-project-desktop-tool" target="_blank" class="hidden sm:flex px-5 py-2 rounded-xl border border-white/10 text-white text-xs font-bold hover:bg-white/5 transition items-center gap-2">
+                <a href="https://github.com/duyanh-dev/my-project-desktop-tool" target="_blank" class="mag hidden sm:flex px-5 py-2.5 rounded-xl bg-black/5 text-xs font-bold hover:bg-black/10 transition items-center gap-2">
                     <i class="fab fa-github"></i> REPOSITORY
                 </a>
-                <button onclick="scrollToId('features')" class="px-5 py-2 rounded-xl bg-white text-black text-xs font-bold hover:bg-indigo-50 transition shadow-lg">EXPLORE</button>
+                <button onclick="scrollToId('features')" class="mag px-5 py-2.5 rounded-xl bg-[#0f1115] text-white text-xs font-bold hover:bg-[#3a43ff] transition">EXPLORE</button>
             </div>
         </div>
     </nav>
 
+    <main>
     <!-- Hero -->
-    <section class="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-indigo-600/5 blur-[120px] rounded-full -z-10"></div>
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl md:text-8xl font-black mb-8 leading-tight tracking-tighter italic">ONE DESKTOP. <br> <span class="gradient-text">ALL DEV WORKFLOWS.</span></h1>
-            <p class="text-slate-400 text-lg md:text-xl max-w-3xl mx-auto mb-12 font-medium">An all-in-one desktop application built for frontend developers who want deep focus: code, process data, and manage personal productivity without jumping across browser tabs.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <!-- <button onclick="scrollToId('features')" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition shadow-xl">Explore Features</button> -->
-                <a href="https://github.com/duyanh-dev/my-project-desktop-tool/releases/tag/v1.2.1" target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition shadow-xl">
+    <section id="hero" class="relative min-h-screen flex items-center pt-32 pb-20 px-6">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 id="hero-title" class="text-5xl md:text-8xl font-bold mb-8 leading-[1.02] tracking-tighter">ONE DESKTOP. <br> <span class="text-[#3a43ff]">ALL DEV WORKFLOWS.</span></h1>
+            <p id="hero-sub" class="text-slate-600 text-lg md:text-xl max-w-3xl mx-auto mb-12 font-medium">An all-in-one desktop application built for frontend developers who want deep focus: code, process data, and manage personal productivity without jumping across browser tabs.</p>
+            <div id="hero-cta" class="flex flex-wrap justify-center gap-4">
+                <a href="https://github.com/duyanh-dev/my-project-desktop-tool/releases/tag/v1.2.1" target="_blank" class="mag w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#3a43ff] text-white font-bold hover:bg-[#2530d9] transition">
                     <i class="fab fa-github"></i> Download for Mac
                 </a>
-                <a href="https://github.com/duyanh-dev/my-project-desktop-tool" target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-2xl glass font-bold border-white/10 hover:bg-white/5 transition flex items-center justify-center gap-2">
+                <a href="https://github.com/duyanh-dev/my-project-desktop-tool" target="_blank" class="mag w-full sm:w-auto px-8 py-4 rounded-2xl glass font-bold hover:bg-white transition flex items-center justify-center gap-2">
                     <i class="fab fa-github"></i> Go To Repository
                 </a>
             </div>
@@ -138,39 +164,39 @@
     </section>
 
     <!-- Story -->
-    <section id="story" class="py-20 px-6 max-w-5xl mx-auto">
-        <div class="bento-card p-8 md:p-12">
-            <p class="text-indigo-400 font-bold text-xs tracking-[0.2em] uppercase mb-4">The Story</p>
-            <h2 class="text-3xl md:text-5xl font-black mb-8 tracking-tight">From Tab Chaos To A Personal Desktop Laboratory</h2>
+    <section id="story" class="py-24 px-6 max-w-5xl mx-auto">
+        <div class="bento-card dark p-8 md:p-14">
+            <p class="text-[#8f95ff] font-medium text-sm mb-4">The Story</p>
+            <h2 class="text-3xl md:text-5xl font-bold mb-10 tracking-tight">From Tab Chaos To A Personal Desktop Laboratory</h2>
             <div class="space-y-6">
-                <p class="text-slate-300 text-lg leading-relaxed">As a developer, I used to open dozens of browser tabs every day: CodePen for UI testing, format converter websites for JSON and SCSS, and Notion for task management. This fragmented workflow constantly broke my deep-work state.</p>
-                <p class="text-slate-400 text-lg leading-relaxed">Instead of relying on disconnected external tools, I decided to build my own desktop laboratory - one place that brings together everything I need for daily frontend work.</p>
+                <p class="story-p text-lg md:text-2xl leading-relaxed">As a developer, I used to open dozens of browser tabs every day: CodePen for UI testing, format converter websites for JSON and SCSS, and Notion for task management. This fragmented workflow constantly broke my deep-work state.</p>
+                <p class="story-p text-lg md:text-2xl leading-relaxed">Instead of relying on disconnected external tools, I decided to build my own desktop laboratory - one place that brings together everything I need for daily frontend work.</p>
             </div>
         </div>
     </section>
 
     <!-- Features -->
-    <section id="features" class="py-20 px-6 max-w-7xl mx-auto">
-        <div class="mb-12 text-center max-w-4xl mx-auto">
-            <p class="text-indigo-400 font-bold text-xs tracking-[0.2em] uppercase mb-3">What It Delivers</p>
-            <h2 class="text-4xl md:text-5xl font-black mb-6 tracking-tight">A Complete Desktop Solution</h2>
-            <p class="text-slate-400 text-lg">Designed to solve daily frontend tasks from live coding and data processing to personal productivity management in a single desktop app.</p>
+    <section id="features" class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="sec-head mb-14 text-center max-w-4xl mx-auto">
+            <p class="text-[#3a43ff] font-medium text-sm mb-3">What It Delivers</p>
+            <h2 class="text-4xl md:text-6xl font-bold mb-6 tracking-tight">A Complete Desktop Solution</h2>
+            <p class="lead text-slate-600 text-lg">Designed to solve daily frontend tasks from live coding and data processing to personal productivity management in a single desktop app.</p>
         </div>
-        
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- SCSS Compiler -->
-            <div class="lg:col-span-8 bento-card p-8 md:p-10 flex flex-col">
+            <div class="lg:col-span-8 bento-card tilt p-8 md:p-10 flex flex-col">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
                     <div>
-                        <span class="text-pink-500 font-bold text-[10px] tracking-[0.2em] uppercase">Data Processing Hub</span>
-                        <h3 class="text-3xl font-black mt-2">SCSS Compiler</h3>
+                        <span class="text-[#ff4d2e] font-medium text-sm">Data Processing Hub</span>
+                        <h3 class="text-3xl font-bold mt-2">SCSS Compiler</h3>
                     </div>
-                    <button onclick="demoCompile()" class="w-full sm:w-auto px-6 py-3 bg-pink-500 rounded-xl text-white font-bold text-xs hover:bg-pink-600 transition shadow-lg shadow-pink-500/20">COMPILE</button>
+                    <button onclick="demoCompile()" class="mag w-full sm:w-auto px-6 py-3 bg-[#ff4d2e] rounded-xl text-white font-bold text-xs hover:bg-[#e03a1c] transition">COMPILE</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
                     <div class="flex flex-col gap-2">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-1">Input SCSS</label>
-                        <textarea id="scss-input" class="bg-black/40 p-6 rounded-2xl border border-white/5 code-font text-sm outline-none resize-none h-64 focus:border-pink-500/50 transition" spellcheck="false">$primary: #6366f1; 
+                        <label class="text-xs text-slate-500 font-medium ml-1">Input SCSS</label>
+                        <textarea id="scss-input" class="field p-6 code-font text-sm outline-none resize-none h-64 transition" spellcheck="false">$primary: #6366f1; 
 .card { 
   background: $primary; 
   padding: 20px;
@@ -178,42 +204,42 @@
 }</textarea>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-widest ml-1">Output CSS</label>
-                        <div id="css-output" class="bg-indigo-500/5 p-6 rounded-2xl border border-indigo-500/10 code-font text-sm text-indigo-300 overflow-auto h-64 whitespace-pre">/* Output appears here... */</div>
+                        <label class="text-xs text-slate-500 font-medium ml-1">Output CSS</label>
+                        <div id="css-output" class="p-6 rounded-2xl code-font text-sm overflow-auto h-64 whitespace-pre">/* Output appears here... */</div>
                     </div>
                 </div>
             </div>
 
             <!-- JSON Toolkit -->
-            <div class="lg:col-span-4 bento-card p-8 md:p-10 flex flex-col">
-                <h3 class="text-3xl font-black mb-2">JSON Toolkit</h3>
-                <p class="text-slate-400 text-sm mb-6">Minify, parse, and transform JSON into useful formats.</p>
+            <div class="lg:col-span-4 bento-card tilt p-8 md:p-10 flex flex-col" style="background:#3a43ff;color:#fff">
+                <h3 class="text-3xl font-bold mb-2">JSON Toolkit</h3>
+                <p class="text-white/70 text-sm mb-6">Minify, parse, and transform JSON into useful formats.</p>
                 <div class="flex flex-col gap-2 flex-grow mb-6">
-                     <textarea id="json-input" class="w-full flex-grow bg-black/40 p-5 rounded-2xl border border-white/5 code-font text-xs outline-none resize-none h-44 focus:border-indigo-500/50 transition" spellcheck="false">{"id":1,"user":"DuyAnh","role":"Frontend Dev","tools":["SCSS","JS","CMS"]}</textarea>
+                     <textarea id="json-input" class="field w-full flex-grow p-5 code-font text-xs outline-none resize-none h-44 transition" spellcheck="false">{"id":1,"user":"DuyAnh","role":"Frontend Dev","tools":["SCSS","JS","CMS"]}</textarea>
                 </div>
-                <button onclick="demoJson()" class="w-full py-4 bg-indigo-600 rounded-2xl font-bold hover:bg-indigo-500 transition text-xs shadow-lg shadow-indigo-600/20 uppercase tracking-widest">FORMAT JSON</button>
+                <button onclick="demoJson()" class="mag w-full py-4 bg-white text-[#0f1115] rounded-2xl font-bold hover:bg-[#0f1115] hover:text-white transition text-xs">FORMAT JSON</button>
             </div>
 
             <!-- Playground -->
-            <div id="studio" class="lg:col-span-12 bento-card p-8 md:p-10">
+            <div id="studio" class="lg:col-span-12 bento-card tilt-soft p-8 md:p-10">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10">
                     <div>
-                        <h3 class="text-3xl font-black mb-2">Cloud-Synced Playground</h3>
-                        <p class="text-slate-400 max-w-2xl">A CodePen-style live coding environment designed to sync snippets with Supabase and your CMS.</p>
+                        <h3 class="text-3xl font-bold mb-2">Cloud-Synced Playground</h3>
+                        <p class="text-slate-600 max-w-2xl">A CodePen-style live coding environment designed to sync snippets with Supabase and your CMS.</p>
                     </div>
-                    <button onclick="runStudio()" class="w-full md:w-auto px-10 py-4 bg-indigo-600 rounded-2xl font-bold text-white hover:bg-indigo-500 transition shadow-xl shadow-indigo-600/20">RUN PLAYGROUND</button>
+                    <button onclick="runStudio()" class="mag w-full md:w-auto px-10 py-4 bg-[#0f1115] rounded-2xl font-bold text-white hover:bg-[#3a43ff] transition">RUN PLAYGROUND</button>
                 </div>
-                
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                     <div class="space-y-2">
-                        <label class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest ml-1">HTML</label>
-                        <textarea id="html-code" class="w-full h-40 bg-black/40 p-4 rounded-xl border border-white/5 code-font text-xs outline-none focus:border-indigo-500/30" spellcheck="false"><div class="blob">
+                        <label class="text-xs text-[#3a43ff] font-medium ml-1">HTML</label>
+                        <textarea id="html-code" class="field w-full h-40 p-4 code-font text-xs outline-none" spellcheck="false"><div class="blob">
   <h1 id="greeting">Loading...</h1>
 </div></textarea>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] text-purple-400 font-bold uppercase tracking-widest ml-1">CSS</label>
-                        <textarea id="css-code" class="w-full h-40 bg-black/40 p-4 rounded-xl border border-white/5 code-font text-xs outline-none focus:border-purple-500/30" spellcheck="false">body { 
+                        <label class="text-xs text-[#a43fd1] font-medium ml-1">CSS</label>
+                        <textarea id="css-code" class="field w-full h-40 p-4 code-font text-xs outline-none" spellcheck="false">body { 
   background: #030712; 
   display: grid; place-items: center; 
   height: 100vh; margin: 0;
@@ -221,85 +247,123 @@
 #greeting { 
   font-family: sans-serif; 
   font-size: 2rem; 
-  background: linear-gradient(to right, #6366f1, #a855f7); 
-  -webkit-background-clip: text; 
-  -webkit-text-fill-color: transparent; 
+  color: #8f95ff; 
 }
 .blob {
   padding: 40px;
   background: rgba(255,255,255,0.05);
   border-radius: 24px;
-  border: 1px solid rgba(255,255,255,0.1);
 }</textarea>
                     </div>
                     <div class="space-y-2">
-                        <label class="text-[10px] text-yellow-400 font-bold uppercase tracking-widest ml-1">JS</label>
-                        <textarea id="js-code" class="w-full h-40 bg-black/40 p-4 rounded-xl border border-white/5 code-font text-xs outline-none focus:border-yellow-500/30" spellcheck="false">const el = document.getElementById('greeting');
+                        <label class="text-xs text-[#b98400] font-medium ml-1">JS</label>
+                        <textarea id="js-code" class="field w-full h-40 p-4 code-font text-xs outline-none" spellcheck="false">const el = document.getElementById('greeting');
 el.innerText = "DESKTOP LAB READY 🚀";</textarea>
                     </div>
                 </div>
-                <div class="w-full h-80 bg-slate-950 rounded-2xl border border-white/5 overflow-hidden shadow-inner">
+                <div class="w-full h-80 bg-[#030712] rounded-2xl overflow-hidden">
                     <iframe id="studio-preview" class="w-full h-full border-none"></iframe>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Zoom chapter -->
+    <section id="zoom" aria-label="Focus chapter">
+        <div id="zoom-frame" class="rounded-[40px]">
+            <div class="zs"><small>01 / CODE</small><h3>Build.</h3><p>A live playground that syncs snippets with Supabase. No tab-hopping.</p></div>
+            <div class="zs"><small>02 / DATA</small><h3>Transform.</h3><p>SCSS and JSON tools one keystroke away, right beside your code.</p></div>
+            <div class="zs"><small>03 / FOCUS</small><h3>Stay in flow.</h3><p>Notes, clipboard history and a leave-request assistant in the same window.</p></div>
+            <div id="zoom-bar"></div>
+        </div>
+    </section>
+
     <!-- Productivity -->
-    <section id="codelab" class="py-20 md:py-32 px-6 glass relative">
+    <section id="codelab" class="py-20 md:py-28 px-6 mx-4 md:mx-8 rounded-[40px] bg-[#f6f7f9]">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
-                <h2 class="text-5xl md:text-6xl font-black mb-10 tracking-tighter italic">Productivity Ecosystem</h2>
-                <p class="text-slate-400 text-xl leading-relaxed mb-8">To optimize daily workflow, this desktop suite extends beyond coding with practical productivity tools:</p>
-                <ul class="space-y-6 text-slate-300">
-                    <li class="flex items-start gap-4">
-                        <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs shrink-0 mt-1"><i class="fas fa-check"></i></div>
+                <h2 class="text-5xl md:text-6xl font-bold mb-10 tracking-tighter">Productivity Ecosystem</h2>
+                <p class="text-slate-600 text-xl leading-relaxed mb-8">To optimize daily workflow, this desktop suite extends beyond coding with practical productivity tools:</p>
+                <ul class="space-y-6 text-slate-800">
+                    <li class="prod-li flex items-start gap-4">
+                        <div class="w-7 h-7 rounded-lg bg-[#3a43ff] flex items-center justify-center text-white text-xs shrink-0 mt-0.5"><i class="fas fa-check"></i></div>
                         <span>Block-based note system inspired by Notion</span>
                     </li>
-                    <li class="flex items-start gap-4">
-                        <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs shrink-0 mt-1"><i class="fas fa-check"></i></div>
+                    <li class="prod-li flex items-start gap-4">
+                        <div class="w-7 h-7 rounded-lg bg-[#3a43ff] flex items-center justify-center text-white text-xs shrink-0 mt-0.5"><i class="fas fa-check"></i></div>
                         <span>Clipboard history manager for fast reuse</span>
                     </li>
-                    <li class="flex items-start gap-4">
-                        <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs shrink-0 mt-1"><i class="fas fa-check"></i></div>
+                    <li class="prod-li flex items-start gap-4">
+                        <div class="w-7 h-7 rounded-lg bg-[#3a43ff] flex items-center justify-center text-white text-xs shrink-0 mt-0.5"><i class="fas fa-check"></i></div>
                         <span>Rule-based virtual assistant that can generate leave-request forms automatically</span>
                     </li>
                 </ul>
             </div>
-            <div class="relative bento-card glass p-2 border-white/10 shadow-2xl aspect-square bg-slate-950 overflow-hidden">
-                <div id="mini-cl-canvas" class="w-full h-full relative">
-                    <div id="cl-preview" class="absolute inset-0 pointer-events-none transition-all duration-300" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3)); backdrop-filter: blur(8px); clip-path: polygon(25% 25%, 75% 25%, 75% 75%, 25% 75%);"></div>
-                    <svg id="cl-guides" class="absolute inset-0 w-full h-full pointer-events-none opacity-0"><line id="guide-x" x1="0" y1="50%" x2="100%" y2="50%" stroke="#6366f1" stroke-dasharray="4" stroke-width="1"></line><line id="guide-y" x1="50%" y1="0" x2="50%" y2="100%" stroke="#6366f1" stroke-dasharray="4" stroke-width="1"></line></svg>
+            <div class="relative bento-card p-2 aspect-square overflow-hidden" style="background:#14161c">
+                <div id="mini-cl-canvas" class="w-full h-full relative rounded-3xl overflow-hidden">
+                    <div id="cl-preview" class="absolute inset-0 pointer-events-none transition-all duration-300" style="background:#3a43ff; clip-path: polygon(25% 25%, 75% 25%, 75% 75%, 25% 75%);"></div>
+                    <svg id="cl-guides" class="absolute inset-0 w-full h-full pointer-events-none opacity-0"><line id="guide-x" x1="0" y1="50%" x2="100%" y2="50%" stroke="#ffffff" stroke-dasharray="4" stroke-width="1"></line><line id="guide-y" x1="50%" y1="0" x2="50%" y2="100%" stroke="#ffffff" stroke-dasharray="4" stroke-width="1"></line></svg>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Tech Stack -->
-    <section id="tech" class="py-20 px-6 max-w-7xl mx-auto">
-        <div class="bento-card p-8 md:p-12 text-center lg:text-left">
-            <p class="text-indigo-400 font-bold text-xs tracking-[0.2em] uppercase mb-4">Technology</p>
-            <h2 class="text-3xl md:text-5xl font-black mb-6 tracking-tight">Built With Practical Web Technologies</h2>
+    <section id="tech" class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="bento-card dark p-8 md:p-14 text-center lg:text-left">
+            <p class="text-[#8f95ff] font-medium text-sm mb-4">Technology</p>
+            <h2 class="text-3xl md:text-5xl font-bold mb-6 tracking-tight">Built With Practical Web Technologies</h2>
             <p class="text-slate-300 text-lg leading-relaxed max-w-3xl">This desktop app is powered by <span class="font-semibold text-white">HTML, CSS, JavaScript, Supabase, and CMS</span> to deliver a fast, flexible, and developer-centric experience.</p>
-            <div class="flex flex-wrap gap-4 mt-10 justify-center lg:justify-start">
-                <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase">HTML5</span>
-                <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase">Tailwind CSS</span>
-                <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase">JavaScript ES6</span>
-                <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase">Supabase</span>
-                <span class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase">Desktop Wrapper</span>
+            <div id="chips" class="flex flex-wrap gap-4 mt-10 justify-center lg:justify-start">
+                <span class="chip px-5 py-3 rounded-xl bg-white/10 text-xs font-bold cursor-default">HTML5</span>
+                <span class="chip px-5 py-3 rounded-xl bg-white/10 text-xs font-bold cursor-default">Tailwind CSS</span>
+                <span class="chip px-5 py-3 rounded-xl bg-white/10 text-xs font-bold cursor-default">JavaScript ES6</span>
+                <span class="chip px-5 py-3 rounded-xl bg-white/10 text-xs font-bold cursor-default">Supabase</span>
+                <span class="chip px-5 py-3 rounded-xl bg-white/10 text-xs font-bold cursor-default">Desktop Wrapper</span>
             </div>
         </div>
     </section>
+    </main>
 
-    <footer class="py-24 text-center border-t border-white/5 px-6">
-        <div class="mb-12 flex justify-center gap-6">
-             <a href="https://github.com/duyanh-dev/da-tool-landingpage" target="_blank" class="text-slate-500 hover:text-white transition text-2xl"><i class="fab fa-github"></i></a>
-             <a href="#" class="text-slate-500 hover:text-white transition text-2xl"><i class="fab fa-linkedin"></i></a>
+    <footer id="footer" class="relative overflow-hidden text-[#f4f5f7] pt-28 md:pt-40 pb-8 mt-10" style="background:#0b0d12;border-radius:48px 48px 0 0">
+        <div class="max-w-7xl mx-auto px-6">
+            <p class="code-font text-xs tracking-[.2em] text-[#8f95ff] mb-8">NEXT / START HERE</p>
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-14">
+                <h2 id="ft-title" class="text-5xl md:text-8xl font-bold tracking-tighter leading-[.95]">Leave the tabs<br><span class="text-[#3a43ff]">behind.</span></h2>
+                <a href="https://github.com/duyanh-dev/my-project-desktop-tool/releases/tag/v1.2.1" target="_blank" class="mag ft-cta shrink-0"><i class="fas fa-arrow-right"></i>DOWNLOAD<br>FOR MAC</a>
+            </div>
         </div>
-        <button onclick="scrollToId('story')" class="px-10 py-5 bg-white text-black rounded-2xl font-bold hover:bg-slate-200 transition shadow-xl uppercase text-xs tracking-widest">READ THE STORY</button>
-        <p class="mt-16 text-slate-600 text-[10px] tracking-[0.4em] uppercase font-bold">&copy; 2026 DUYANH.DESKTOPLAB — CRAFTED FOR FOCUS</p>
+
+        <div class="max-w-7xl mx-auto px-6 mt-24 md:mt-32 grid grid-cols-2 md:grid-cols-4 gap-10 text-sm ft-cols">
+            <div class="ft-col col-span-2 md:col-span-1">
+                <div class="w-11 h-11 rounded-xl bg-[#3a43ff] text-white flex items-center justify-center font-bold mb-5">DA</div>
+                <p class="text-[#9aa0ae] max-w-[16rem] leading-relaxed">One desktop for code, data and focus. Crafted for deep work.</p>
+            </div>
+            <div class="ft-col"><p class="code-font text-xs tracking-[.15em] text-[#8f95ff] mb-4">NAVIGATE</p>
+                <a class="ft-link" href="#story">Story</a><a class="ft-link" href="#features">Core Features</a><a class="ft-link" href="#tech">Tech Stack</a></div>
+            <div class="ft-col"><p class="code-font text-xs tracking-[.15em] text-[#8f95ff] mb-4">PROJECT</p>
+                <a class="ft-link" target="_blank" href="https://github.com/duyanh-dev/my-project-desktop-tool">Repository</a>
+                <a class="ft-link" target="_blank" href="https://github.com/duyanh-dev/my-project-desktop-tool/releases/tag/v1.2.1">Releases v1.2.1</a>
+                <a class="ft-link" target="_blank" href="https://github.com/duyanh-dev/da-tool-landingpage">Landing source</a></div>
+            <div class="ft-col"><p class="code-font text-xs tracking-[.15em] text-[#8f95ff] mb-4">CONNECT</p>
+                <a class="ft-link" target="_blank" href="https://github.com/duyanh-dev"><i class="fab fa-github mr-2"></i>GitHub</a>
+                <a class="ft-link" href="#"><i class="fab fa-linkedin mr-2"></i>LinkedIn</a></div>
+        </div>
+
+        <div id="ft-word-wrap" class="mt-24 px-4 select-none" aria-hidden="true">
+            <div id="ft-word" class="font-bold tracking-tighter text-center whitespace-nowrap" style="font-size:14.5vw;line-height:.88;color:#f4f5f7">DESKTOP <span style="color:#3a43ff">LAB</span></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 code-font text-[11px] text-[#9aa0ae] tracking-wide">
+            <span>&copy; 2026 DUYANH.DESKTOPLAB — CRAFTED FOR FOCUS</span>
+            <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="mag px-5 py-2.5 rounded-xl bg-white/10 hover:bg-[#3a43ff] text-white transition font-bold">BACK TO TOP ↑</button>
+        </div>
     </footer>
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="./index.js"></script>
 
 </body>
